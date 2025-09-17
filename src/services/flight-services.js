@@ -23,6 +23,7 @@ export async function createFlightService (data) {
 export async function getAllFlightsService(dept_city, arrival_city) {
   try {
     const result=await flightRepo.getAllTheFlightsBasedOnDept_Arrival(dept_city , arrival_city) ;
+    logger.info("Fetched all the flights" , result) ;
     return result ; 
   } catch (error) {
     console.error("Error fetching flights:", error);

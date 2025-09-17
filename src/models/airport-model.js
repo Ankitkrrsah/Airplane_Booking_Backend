@@ -10,6 +10,7 @@ const airportSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    index : true // This enables log(N) searching time complxity that we gonna use in flightRepo for getAllTheFlightsBasedOnDept_Arrival
   },
   address: {
     type: String,
