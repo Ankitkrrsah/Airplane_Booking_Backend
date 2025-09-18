@@ -32,6 +32,14 @@ const flightSchema = new mongoose.Schema({
   boardingGate: {
     type: Number,
     default: null,
+  } , 
+  totalAvlSeats : {
+    type : Number , 
+    default : 350 
+  } , 
+  bookedSeats : {
+    type : Number , 
+    default : 0 
   }
 });
 

@@ -36,7 +36,7 @@ export class FlightRepository extends CrudRepositories {
  
 
    // this can search all the flights in O(Log(N)) time 
-   async getAllTheFlightsBasedOnDept_Arrival(dept_city, arrival_city) {
+   async getAllTheFlightsBasedOnDept_Arrival(dept_city, arrival_city , traveller , priceSort) {
   try {
     // run both airport lookups in parallel
     const [arr, dept] = await Promise.all([
@@ -47,15 +47,18 @@ export class FlightRepository extends CrudRepositories {
     if (!arr || !dept) {
       return []; // no such airports
     }
+    let avlFlights ;
 
-    const avlFlights = await Flight.find({
+      avlFlights = await Flight.find({
       arrivalAirportId: arr._id,
       departureAirportId: dept._id,
     })
       .populate("arrivalAirportId")
       .populate("departureAirportId");
 
-    console.log(avlFlights);
+      if(priceSort){
+        avlFlights =  avlFlights.sort({price : 1}) ;
+      }
     return avlFlights; //returns an array 
   } catch (error) {
     logger.error("Error occurred in flight_repo", error);

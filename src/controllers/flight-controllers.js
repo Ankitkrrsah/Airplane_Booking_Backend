@@ -36,15 +36,9 @@ export const createFlightController = async (req , res)=>{
 
 export const getAllFlightsController = async (req , res)=> {
     try {
-        const dept_city  = req.query.dept ;
-        const arrival_city  = req.query.arrival ;
-        const result = await getAllFlightsService(dept_city , arrival_city) ;
-        if(!result) {
-            const response = {...successResponse , message : `No flight exisits between these routes` , data : result } ;
-            return res.status(StatusCodes.OK).json(response)
-        }
-
-        const response = {...successResponse , message : `Sucessfully fetched all the flights` , data : result } ;
+        const result = await getAllFlightsService(req.query) ; 
+        const response = {...successResponse , message : `Sucessfully fetched all the flights` , data : result} ;
+        console.log("Hii" , result) ;
         return res.status(StatusCodes.OK).json(response); 
     } catch (error) {
         const response = {...errorResponse , message : `${error.message}` , data : error} ; 
