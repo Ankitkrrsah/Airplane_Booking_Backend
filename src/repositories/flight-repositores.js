@@ -58,11 +58,6 @@ export class FlightRepository extends CrudRepositories {
 
       if(priceSort){
         avlFlights =  avlFlights.sort({price : 1}) ;
-      }
-    return avlFlights; //returns an array 
-  } catch (error) {
-    logger.error("Error occurred in flight_repo", error);
-    throw error;
   }
 }
 }
