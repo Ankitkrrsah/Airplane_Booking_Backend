@@ -9,7 +9,8 @@
   "seed_airplane" : "node src/seeder/airplaneSeeder.js" , 
   "seed_cities" : "node src/seeder/citySeeder.js" , 
   "seed_airports" : "node src/seeder/airportSeeder.js" , 
-  "seed_flights" : "node src/seeder/flightSeeder.js"
+  "seed_flights" : "node src/seeder/flightSeeder.js" , 
+  "seed_seats" : "node src/seeder/seatSeeder.js"
 },
   "author": "",
   "license": "ISC",

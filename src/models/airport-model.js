@@ -24,6 +24,7 @@ const airportSchema = new mongoose.Schema({
   },
 });
 
+airportSchema.index({code:1 , cityId : 1}) ; 
 
 airportSchema.pre(['find', 'findOne', 'findById'], function (next) {
   this.populate('cityId', 'name'); 

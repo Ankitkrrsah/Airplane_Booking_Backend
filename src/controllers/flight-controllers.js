@@ -36,9 +36,10 @@ export const createFlightController = async (req , res)=>{
 
 export const getAllFlightsController = async (req , res)=> {
     try {
+        console.log(req.query)
         const result = await getAllFlightsService(req.query) ; 
         const response = {...successResponse , message : `Sucessfully fetched all the flights` , data : result} ;
-        console.log("Hii" , result) ;
+        
         return res.status(StatusCodes.OK).json(response); 
     } catch (error) {
         const response = {...errorResponse , message : `${error.message}` , data : error} ; 

@@ -24,59 +24,51 @@ export async function getAllFlightsService(query) {
   let dept_city, arrival_city;
   let minCost, maxCost;
   let traveller = 1;
-  let priceSort = false ; 
-  // default to today's date
-  let flightDate = new Date().toISOString().slice(0, 10);
+  let priceSort = false;
+  let flightDate = new Date().toLocaleDateString('en-CA'); // default today YYYY-MM-DD
 
+  // Parse query params
   if (query.travel) [dept_city, arrival_city] = query.travel.split("-");
   if (query.priceRange) {
-    [minCost, maxCost] = query.priceRange.split("-").map((num) => parseInt(num));
+    [minCost, maxCost] = query.priceRange.split("-").map(Number);
+    if (!isNaN(minCost) && isNaN(maxCost)) maxCost = Infinity;
   }
-  if (query.traveller) {
-    traveller = Number(query.traveller);
-    if (traveller <= 0) traveller = 1;
-  }
-  if (query.flightDate) {
-    flightDate = query.flightDate; // expects "YYYY-MM-DD"
-  }
-  if(query.priceSort) priceSort = true ;
-  // if no input in any of these then return an empty array
+  if (query.traveller) traveller = Math.max(1, Number(query.traveller));
+  if (query.flightDate) flightDate = query.flightDate;
+  if (query.priceSort === "true" || query.priceSort === true) priceSort = true;
+
   if (!dept_city || !arrival_city) return [];
 
-  if (!isNaN(minCost) && isNaN(maxCost)) {
-    maxCost = Infinity;
-  }
-
   try {
-    let result = await flightRepo.getAllTheFlightsBasedOnDept_Arrival(
+    // Fetch flights by airports
+    const filters = {};
+    let flights = await flightRepo.getAllTheFlightsBasedOnDept_Arrival(
       dept_city,
-      arrival_city , 
-      priceSort
+      arrival_city,
+      filters
     );
-    // filter for price if provided
+
+    // Filter by price
     if (!isNaN(minCost) && !isNaN(maxCost)) {
-      result = result.filter(
-        (data) => data.price >= minCost && data.price <= maxCost
-      );
+      flights = flights.filter(f => f.price >= minCost && f.price <= maxCost);
     }
 
-    // filter for available seats
-    result = result.filter(
-      (data) => data.totalAvlSeats - data.bookedSeats >= traveller
-    );
+    // Filter by available seats
+    flights = flights.filter(f => f.airplane.capacity - f.bookedSeats >= traveller);
 
-    // filter for date
-    result = result.filter((data) => {
-      const arrivalDate = new Date(data.arrivalAirportTime)
-        .toISOString()
-        .slice(0, 10);
+    // Filter by flight date (arrival)
+    flights = flights.filter(f => {
+      const arrivalDate = new Date(f.arrivalAirportTime).toLocaleDateString('en-CA');
       return arrivalDate === flightDate;
     });
 
-    logger.info("Fetched all the flights", result);
-    return result;
+    // Sort by price if requested
+    if (priceSort) flights.sort((a, b) => a.price - b.price);
+
+    logger.info("Fetched flights successfully", flights);
+    return flights;
   } catch (error) {
-    console.error("Error fetching flights:", error);
+    logger.error("Error fetching flights", error);
     throw error;
   }
 }
